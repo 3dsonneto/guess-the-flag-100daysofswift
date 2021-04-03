@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     var countries = [String]()
     var score = 0
     var correctAnswer = 0
+    var questionsAsked = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
 
     }
 
-    func askQuestion(){
+    func askQuestion(action: UIAlertAction! = nil){
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
         
@@ -45,8 +46,49 @@ class ViewController: UIViewController {
         button2.setImage(UIImage(named: countries[1]), for: .normal)
         button3.setImage(UIImage(named: countries[2]), for: .normal)
         
-        title = countries[correctAnswer].uppercased()
+        title = "\(countries[correctAnswer].uppercased()) | SCORE: \(score)"
+        questionsAsked += 1
     }
+    
+    @IBAction func buttonTapped(_ sender: UIButton) {
+        var title: String
+        let pressed = sender.tag
+        if questionsAsked < 10 {
+            if sender.tag == correctAnswer {
+                title = "Correct"
+                score += 1
+            } else {
+                title = "Wrong! That's the flag of \(countries[pressed].uppercased())"
+                score -= 1
+            }
+            
+            let ac = UIAlertController(title: title, message: "Your score is \(score)", preferredStyle: .alert) //o estilo é .alert(situation change) ou actionsheet(choose options), alert fica no meio e actionsheet vem de cima e fica
+            
+            ac.addAction(UIAlertAction(title: "Continue", style: .default, handler: askQuestion))//o handler procura um closure(codigo que executa quando o botão é executado, nesse caso chama o askQuestion)
+            
+            present(ac, animated: true)//
+        } else {
+            title = "The End"
+            
+            if sender.tag == correctAnswer {
+                score += 1
+            } else {
+                score -= 1
+            }
+            
+            let ac = UIAlertController(title: title, message: "Your score is \(score)", preferredStyle: .alert) //o estilo é .alert(situation change) ou actionsheet(choose options), alert fica no meio e actionsheet vem de cima e fica
+            
+            ac.addAction(UIAlertAction(title: "Play Again", style: .default, handler: askQuestion))//o handler procura um closure(codigo que executa quando o botão é executado, nesse caso chama o askQuestion)
+            
+            present(ac, animated: true)//
+            
+            score = 0
+            questionsAsked = 0
+        }
+            
+            
+    }
+    
 
 }
 
